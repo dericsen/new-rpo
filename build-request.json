@@ -1,0 +1,206 @@
+{
+  "kind": "build_request",
+  "title": "Chinese New Year Hidden-Object Web Game (3 Levels) with Internet Identity Auth and Persistent Progress",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement authentication using Internet Identity and associate all player data with the authenticated Principal (replace the requested username/password login with II due to platform constraints). Provide UI flows for sign-in, sign-out, and showing the currently signed-in identity state.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Autentikasi: Sistem login sederhana (username + password) untuk menyimpan progres per pemain.",
+          "Backend harus memvalidasi user."
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can sign in and sign out using Internet Identity.",
+        "Backend stores and retrieves progress keyed by caller Principal; unauthenticated callers cannot read/write progress.",
+        "Frontend shows a clear signed-in/signed-out state and blocks gameplay screens until signed in."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create backend persistent storage in Motoko for per-user progress across 3 levels (Level 1/2/3), including completion status and last-updated timestamp, and expose canister methods to: (1) get the current user's progress, (2) mark a level as completed, and (3) reset progress for the current user (for testing).",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Menyimpan progres ke database.",
+          "API untuk: Ambil data progres user; Simpan progres level (level selesai / belum)",
+          "Tabel progress (user_id, level, is_completed, updated_at)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Progress persists across page reloads and canister calls for the same Principal.",
+        "Calling 'get progress' returns a structure representing levels 1-3 with completion flags and updated timestamps.",
+        "Calling 'complete level' sets that level to completed, updates updated_at, and does not affect other levels.",
+        "Optional reset method clears only the caller's progress and does not affect other users."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Build the frontend app screens and navigation: (1) Auth screen (Internet Identity sign-in), (2) Level Select screen showing 3 levels with completed/incomplete indicators, (3) Gameplay screen for the selected level, (4) Level Complete screen, and (5) Game Complete screen when all levels are completed.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Halaman login & register.",
+          "Halaman pilih level (level yang sudah selesai ditandai).",
+          "Halaman gameplay",
+          "Halaman selesai level / selesai game."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can navigate from sign-in to level select, then into a level, then see level complete, then return to level select.",
+        "Level select clearly indicates completed vs not completed for all 3 levels based on backend progress.",
+        "Game complete screen is shown when all 3 levels are completed."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement the hidden-object gameplay logic for 3 levels in 2D scenes: Level 1 requires finding 5 red envelopes (angpao), Level 2 requires finding 5 coins, Level 3 requires finding 5 mochi. Each level must render a scene with multiple clickable hidden objects; clicking an unfound target marks it found, updates the on-screen counter (e.g., 2/5), and triggers a simple visual + sound feedback. When all 5 targets are found, the level is marked completed and saved to the backend for the signed-in user.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Level 1: Cari 5 angpao.",
+          "Level 2: Cari 5 koin.",
+          "Level 3: Cari 5 mochi.",
+          "Pemain mengklik objek untuk menandai “ditemukan”.",
+          "Jika semua objek ditemukan, level dianggap selesai dan progres disimpan ke database.",
+          "Efek visual/suara saat objek ditemukan."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each level has exactly 5 required targets of the specified type; found targets cannot be counted twice.",
+        "Gameplay UI shows a list of remaining/found items and a progress counter X/5.",
+        "A visual effect (e.g., highlight/particle/badge) and a short sound play when an item is found (with an option to mute).",
+        "When a level reaches 5/5, the frontend calls the backend to persist completion and transitions to the Level Complete screen.",
+        "Re-entering a completed level shows it as completed in Level Select and does not lose completion state after reload."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Use React Query to fetch and cache the authenticated user's progress from the canister, and ensure the cache is invalidated/refetched after marking a level completed so the Level Select screen updates immediately.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Frontend harus mengambil dan menyimpan progres lewat API."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Progress is loaded once on entry to Level Select and reused until invalidated.",
+        "After completing a level, the Level Select completion indicators update without requiring a hard refresh."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Organize level definitions in a data-driven way (e.g., a single config describing level id, target type, and target placements) so that adding a new level requires minimal code changes.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Kode harus mudah dikembangkan untuk menambah level baru di masa depan."
+        ]
+      },
+      "acceptanceCriteria": [
+        "There is a clear single place to add/modify levels (level metadata + targets).",
+        "Gameplay logic is reused across levels rather than duplicated per level."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Apply a coherent Chinese New Year visual theme (red and gold palette, festive patterns/ornaments, lantern motifs) consistently across all screens, while keeping graphics lightweight and performance-friendly.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Tema visual: Chinese New Year (lampion, ornamen Imlek, warna merah & emas).",
+          "Fokus pada fungsionalitas dan arsitektur, bukan grafis berat.",
+          "Desain visual boleh sederhana."
+        ]
+      },
+      "acceptanceCriteria": [
+        "All screens share consistent typography, spacing, and a red/gold CNY theme.",
+        "UI remains readable and responsive on common desktop widths.",
+        "No heavy 3D or performance-intensive rendering is required."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Add a local developer documentation page or README content that explains: system architecture (frontend + Motoko canister storage), data flow (auth -> read progress -> play -> save completion), and step-by-step instructions to run locally (deploy canister + start frontend).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Penjelasan arsitektur sistem (frontend, backend, database, alur data).",
+          "Instruksi cara menjalankan proyek secara lokal (step by step).",
+          "Penjelasan bagian penting dari kode."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Documentation explains how progress is stored (stable storage keyed by Principal) and how authentication works (Internet Identity).",
+        "Documentation includes clear local run steps using the Internet Computer tooling and the frontend dev server.",
+        "Documentation highlights key modules/files and how to add a new level."
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Render required static scene art and object sprites as frontend static assets under frontend/public/assets/generated and use them in the gameplay scenes (do not route image loading through the backend).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All generated images are stored under frontend/public/assets/generated and referenced by the frontend.",
+        "Gameplay scenes and clickable objects visibly use the generated assets."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must be implemented in Motoko as a single-actor canister (backend/main.mo).",
+    "Do not add or depend on external databases (PostgreSQL/MySQL/SQLite/MongoDB) or external backend frameworks (Node/Python); persist data using canister stable storage.",
+    "Do not implement username/password authentication; only Internet Identity is supported.",
+    "Do not edit files in frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui (compose them instead).",
+    "No WebSockets or real-time server features."
+  ],
+  "nonGoals": [
+    "Multiplayer, leaderboards, or social sharing.",
+    "Complex graphics pipelines, heavy animations, or 3D gameplay.",
+    "Third-party auth providers beyond Internet Identity.",
+    "Payments or monetization features."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Festive Chinese New Year game background scene with lanterns, red/gold decorations, subtle patterning (cny-scene-level1.dim_1920x1080.png)",
+      "Festive Chinese New Year game background scene featuring coin-themed decor and ingots, red/gold palette (cny-scene-level2.dim_1920x1080.png)",
+      "Festive Chinese New Year game background scene featuring sweets/dessert table styling with red/gold ornaments (cny-scene-level3.dim_1920x1080.png)",
+      "Red envelope (angpao) object sprite, simple flat illustration, transparent background (obj-angpao.dim_256x256.png)",
+      "Gold coin object sprite, simple flat illustration, transparent background (obj-coin.dim_256x256.png)",
+      "Mochi object sprite, simple flat illustration, transparent background (obj-mochi.dim_256x256.png)",
+      "Chinese New Year lantern icon/illustration for UI accents, transparent background (ui-lantern.dim_256x256.png)"
+    ],
+    "edits": []
+  }
+}

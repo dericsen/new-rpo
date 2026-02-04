@@ -1,0 +1,175 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-implement-authentication-using-internet-identity-and-associate-all-player-data-with-the-authenticated-principal-replace-the-requested-username-password-login-with-ii-due-to-platform-constraints-provide-ui-flows-for-sign-in-sign-out-and-showing-the-currently-signed-in-identity-state",
+      "featureTitle": "Implement authentication using Internet Identity and associate all player data with the authenticated Principal (replace the requested username/password login with II due to platform constraints). Provide UI flows for sign-in, sign-out, and showing the currently signed-in identity state.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/LoginLogoutButton.tsx",
+        "frontend/src/components/auth/ProfileSetupDialog.tsx",
+        "frontend/src/hooks/useCurrentUserProfile.ts",
+        "frontend/src/pages/AuthPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-the-frontend-app-screens-and-navigation-1-auth-screen-internet-identity-sign-in-2-level-select-screen-showing-3-levels-with-completed-incomplete-indicators-3-gameplay-screen-for-the-selected-level-4-level-complete-screen-and-5-game-complete-screen-when-all-levels-are-completed",
+      "featureTitle": "Build the frontend app screens and navigation: (1) Auth screen (Internet Identity sign-in), (2) Level Select screen showing 3 levels with completed/incomplete indicators, (3) Gameplay screen for the selected level, (4) Level Complete screen, and (5) Game Complete screen when all levels are completed.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/GameCompletePage.tsx",
+        "frontend/src/pages/GameplayPage.tsx",
+        "frontend/src/pages/LevelCompletePage.tsx",
+        "frontend/src/pages/LevelSelectPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-the-hidden-object-gameplay-logic-for-3-levels-in-2d-scenes-level-1-requires-finding-5-red-envelopes-angpao-level-2-requires-finding-5-coins-level-3-requires-finding-5-mochi-each-level-must-render-a-scene-with-multiple-clickable-hidden-objects-clicking-an-unfound-target-marks-it-found-updates-the-on-screen-counter-e-g-2-5-and-triggers-a-simple-visual-sound-feedback-when-all-5-targets-are-found-the-level-is-marked-completed-and-saved-to-the-backend-for-the-signed-in-user",
+      "featureTitle": "Implement the hidden-object gameplay logic for 3 levels in 2D scenes: Level 1 requires finding 5 red envelopes (angpao), Level 2 requires finding 5 coins, Level 3 requires finding 5 mochi. Each level must render a scene with multiple clickable hidden objects; clicking an unfound target marks it found, updates the on-screen counter (e.g., 2/5), and triggers a simple visual + sound feedback. When all 5 targets are found, the level is marked completed and saved to the backend for the signed-in user.",
+      "files": [
+        "frontend/src/components/game/FoundFeedbackOverlay.tsx",
+        "frontend/src/game/HiddenObjectScene.tsx",
+        "frontend/src/game/useSoundEffects.ts",
+        "frontend/src/pages/GameplayPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-use-react-query-to-fetch-and-cache-the-authenticated-user-s-progress-from-the-canister-and-ensure-the-cache-is-invalidated-refetched-after-marking-a-level-completed-so-the-level-select-screen-updates-immediately",
+      "featureTitle": "Use React Query to fetch and cache the authenticated user's progress from the canister, and ensure the cache is invalidated/refetched after marking a level completed so the Level Select screen updates immediately.",
+      "files": [
+        "frontend/src/pages/LevelSelectPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-organize-level-definitions-in-a-data-driven-way-e-g-a-single-config-describing-level-id-target-type-and-target-placements-so-that-adding-a-new-level-requires-minimal-code-changes",
+      "featureTitle": "Organize level definitions in a data-driven way (e.g., a single config describing level id, target type, and target placements) so that adding a new level requires minimal code changes.",
+      "files": [
+        "frontend/src/game/levels.ts",
+        "frontend/src/game/types.ts",
+        "frontend/src/pages/GameplayPage.tsx",
+        "frontend/src/pages/LevelSelectPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-coherent-chinese-new-year-visual-theme-red-and-gold-palette-festive-patterns-ornaments-lantern-motifs-consistently-across-all-screens-while-keeping-graphics-lightweight-and-performance-friendly",
+      "featureTitle": "Apply a coherent Chinese New Year visual theme (red and gold palette, festive patterns/ornaments, lantern motifs) consistently across all screens, while keeping graphics lightweight and performance-friendly.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/CnyLayout.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-local-developer-documentation-page-or-readme-content-that-explains-system-architecture-frontend-motoko-canister-storage-data-flow-auth-read-progress-play-save-completion-and-step-by-step-instructions-to-run-locally-deploy-canister-start-frontend",
+      "featureTitle": "Add a local developer documentation page or README content that explains: system architecture (frontend + Motoko canister storage), data flow (auth -> read progress -> play -> save completion), and step-by-step instructions to run locally (deploy canister + start frontend).",
+      "files": [
+        "frontend/README.md"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-render-required-static-scene-art-and-object-sprites-as-frontend-static-assets-under-frontend-public-assets-generated-and-use-them-in-the-gameplay-scenes-do-not-route-image-loading-through-the-backend",
+      "featureTitle": "Render required static scene art and object sprites as frontend static assets under frontend/public/assets/generated and use them in the gameplay scenes (do not route image loading through the backend).",
+      "files": [
+        "frontend/src/components/layout/CnyLayout.tsx",
+        "frontend/src/game/levels.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

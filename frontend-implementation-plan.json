@@ -1,0 +1,278 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Chinese New Year Hidden-Object Game",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add Internet Identity sign-in/sign-out UI, show signed-in state, and block game screens until authenticated (with profile name via authorization component guidance).",
+      "acceptanceCriteria": [
+        "User can sign in and sign out using Internet Identity.",
+        "Frontend shows a clear signed-in/signed-out state and blocks gameplay screens until signed in."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the app shell and routing with an auth gate that blocks Level Select and all gameplay screens unless `useInternetIdentity().identity` is present; include a top-bar identity status area. Use shadcn-ui primitives for layout and controls (e.g., buttons/cards/dialog) for consistent UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/AuthGate.tsx",
+          "operation": "create",
+          "description": "Add an AuthGate wrapper that redirects unauthenticated users to the Auth screen and optionally shows a loading state while `useInternetIdentity` is initializing. Use the authorization component guidance to ensure users must be logged in before seeing any personal data. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/LoginLogoutButton.tsx",
+          "operation": "create",
+          "description": "Implement a login/logout button using `useInternetIdentity` (login/clear/loginStatus/identity) and clear React Query cache on logout (per authorization component guidance). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useCurrentUserProfile.ts",
+          "operation": "create",
+          "description": "Create React Query hooks to load and cache `actor.getCallerUserProfile()` and to save `actor.saveCallerUserProfile(...)`, following the authorization component guidance to prevent profile-setup modal flash and to avoid displaying raw principal IDs. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/ProfileSetupDialog.tsx",
+          "operation": "create",
+          "description": "Add a first-login profile setup dialog that asks for a display name when `getCallerUserProfile()` returns null; store via `saveCallerUserProfile`. Use shadcn-ui Dialog/Form components for accessible UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/AuthPage.tsx",
+          "operation": "create",
+          "description": "Create an Auth screen that explains the game, provides Internet Identity sign-in, and shows signed-in state (including profile name if present). Use shadcn-ui components for a consistent sign-in experience. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Build required screens and navigation: Auth, Level Select, Gameplay, Level Complete, and Game Complete.",
+      "acceptanceCriteria": [
+        "Users can navigate from sign-in to level select, then into a level, then see level complete, then return to level select.",
+        "Level select clearly indicates completed vs not completed for all 3 levels based on backend progress.",
+        "Game complete screen is shown when all 3 levels are completed."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/LevelSelectPage.tsx",
+          "operation": "create",
+          "description": "Create the Level Select screen showing exactly 3 levels with completed/incomplete indicators, and navigation into the selected level. Use shadcn-ui Card/Badge/Button components for clear status display. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/GameplayPage.tsx",
+          "operation": "create",
+          "description": "Create the Gameplay screen container that reads the selected level id from the route, loads the corresponding level definition, and renders the reusable hidden-object scene component."
+        },
+        {
+          "path": "frontend/src/pages/LevelCompletePage.tsx",
+          "operation": "create",
+          "description": "Create the Level Complete screen with a summary and navigation back to Level Select (and optionally a next-level CTA when applicable). Use shadcn-ui components for consistent layout. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/GameCompletePage.tsx",
+          "operation": "create",
+          "description": "Create the Game Complete screen displayed when all 3 levels are completed; provide navigation back to Level Select and a reset/testing action if exposed in UI. Use shadcn-ui components for consistent layout. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire all required routes (Auth, Level Select, Gameplay by level id, Level Complete, Game Complete) and ensure navigation links/buttons are connected so no screen is orphaned."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Implement 2D hidden-object gameplay for 3 levels (5 targets each) with clickable objects, counter, visual+sound feedback, mute option, and completion persistence call.",
+      "acceptanceCriteria": [
+        "Each level has exactly 5 required targets of the specified type; found targets cannot be counted twice.",
+        "Gameplay UI shows a list of remaining/found items and a progress counter X/5.",
+        "A visual effect (e.g., highlight/particle/badge) and a short sound play when an item is found (with an option to mute).",
+        "When a level reaches 5/5, the frontend calls the backend to persist completion and transitions to the Level Complete screen.",
+        "Re-entering a completed level shows it as completed in Level Select and does not lose completion state after reload."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/game/HiddenObjectScene.tsx",
+          "operation": "create",
+          "description": "Create a reusable 2D hidden-object scene renderer that displays the level background, places 5 clickable target sprites, tracks found state locally per run, prevents double-counting, shows X/5 progress and remaining list, and triggers a lightweight visual feedback on successful finds."
+        },
+        {
+          "path": "frontend/src/game/useSoundEffects.ts",
+          "operation": "create",
+          "description": "Add a small sound-effects hook that plays a short success sound (e.g., via Web Audio API oscillator or lightweight audio) when an item is found, and provides a mute toggle persisted in local storage."
+        },
+        {
+          "path": "frontend/src/hooks/useMarkLevelCompleted.ts",
+          "operation": "create",
+          "description": "Create a React Query mutation hook that calls `actor.markLevelCompleted(level)` upon 5/5 completion and triggers navigation to the Level Complete screen; ensure errors (including authorization traps) are handled and surfaced in UI."
+        },
+        {
+          "path": "frontend/src/pages/GameplayPage.tsx",
+          "operation": "modify",
+          "description": "Integrate the reusable HiddenObjectScene, connect it to the level config (target type + placements + background), show the mute control, and on 5/5 invoke the completion mutation then transition to Level Complete."
+        },
+        {
+          "path": "frontend/src/components/game/FoundFeedbackOverlay.tsx",
+          "operation": "create",
+          "description": "Add a lightweight visual feedback overlay/animation component (e.g., badge/highlight) triggered by found events; use shadcn-ui utility classes/components where appropriate for consistent styling. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Use React Query to fetch/cache progress and invalidate/refetch after completing a level so Level Select updates immediately.",
+      "acceptanceCriteria": [
+        "Progress is loaded once on entry to Level Select and reused until invalidated.",
+        "After completing a level, the Level Select completion indicators update without requiring a hard refresh."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useUserProgress.ts",
+          "operation": "create",
+          "description": "Create a React Query hook to fetch `actor.getUserProgress()` and cache it; include enabled guards based on actor readiness and authentication state."
+        },
+        {
+          "path": "frontend/src/hooks/useMarkLevelCompleted.ts",
+          "operation": "modify",
+          "description": "Invalidate/refetch the cached progress query after a successful `markLevelCompleted` so Level Select indicators update immediately."
+        },
+        {
+          "path": "frontend/src/pages/LevelSelectPage.tsx",
+          "operation": "modify",
+          "description": "Load progress via the progress query hook, render completed/incomplete indicators based on cached data, and gracefully handle loading/unauthorized states."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Make levels data-driven via a single shared config describing metadata, targets, and placements; reuse gameplay logic across levels.",
+      "acceptanceCriteria": [
+        "There is a clear single place to add/modify levels (level metadata + targets).",
+        "Gameplay logic is reused across levels rather than duplicated per level."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/game/levels.ts",
+          "operation": "create",
+          "description": "Add a single level-definition module describing the 3 levels (id, title, target type, required count=5, background asset path, and 5 target placements with sprite asset path)."
+        },
+        {
+          "path": "frontend/src/game/types.ts",
+          "operation": "create",
+          "description": "Define shared TypeScript types for level definitions and target placements used by Level Select and Gameplay."
+        },
+        {
+          "path": "frontend/src/pages/GameplayPage.tsx",
+          "operation": "modify",
+          "description": "Resolve the selected level from the centralized config and pass it into the reusable scene component (no per-level duplicated gameplay code)."
+        },
+        {
+          "path": "frontend/src/pages/LevelSelectPage.tsx",
+          "operation": "modify",
+          "description": "Render the level list from the centralized config to ensure adding a future level is primarily a config change."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Apply a consistent Chinese New Year red/gold theme across all screens with lightweight visuals and responsive layout.",
+      "acceptanceCriteria": [
+        "All screens share consistent typography, spacing, and a red/gold CNY theme.",
+        "UI remains readable and responsive on common desktop widths.",
+        "No heavy 3D or performance-intensive rendering is required."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Create global styling entry point (imported by main.tsx) defining a cohesive CNY theme via CSS variables/classes (red/gold palette, festive accents) compatible with Tailwind/shadcn-ui styling."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend theme tokens to support the CNY palette (reds/golds) and ensure consistent typography/spacing utilities are available for all screens."
+        },
+        {
+          "path": "frontend/src/components/layout/CnyLayout.tsx",
+          "operation": "create",
+          "description": "Create a shared layout wrapper (header/footer/background accents) used by all pages to ensure consistent theme application; use shadcn-ui layout primitives where appropriate. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wrap all screens with the shared CNY layout to apply consistent theme and responsive container sizing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Add local developer documentation describing architecture, auth/data flow, local run steps, and how to add a new level.",
+      "acceptanceCriteria": [
+        "Documentation explains how progress is stored (stable storage keyed by Principal) and how authentication works (Internet Identity).",
+        "Documentation includes clear local run steps using the Internet Computer tooling and the frontend dev server.",
+        "Documentation highlights key modules/files and how to add a new level."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/README.md",
+          "operation": "create",
+          "description": "Write developer documentation covering: architecture (frontend + Motoko canister storage), data flow (auth -> read progress -> play -> save completion), local run steps (deploy canister + start frontend), key frontend modules/hooks, and instructions for adding a new level via the level config."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Store required generated images as static frontend assets and use them in gameplay scenes and UI accents (no backend image routing).",
+      "acceptanceCriteria": [
+        "All generated images are stored under frontend/public/assets/generated and referenced by the frontend.",
+        "Gameplay scenes and clickable objects visibly use the generated assets."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/cny-scene-level1.dim_1920x1080.png",
+          "operation": "create",
+          "description": "Add the generated Level 1 background image as a static asset at the exact path: frontend/public/assets/generated/cny-scene-level1.dim_1920x1080.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/cny-scene-level2.dim_1920x1080.png",
+          "operation": "create",
+          "description": "Add the generated Level 2 background image as a static asset at the exact path: frontend/public/assets/generated/cny-scene-level2.dim_1920x1080.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/cny-scene-level3.dim_1920x1080.png",
+          "operation": "create",
+          "description": "Add the generated Level 3 background image as a static asset at the exact path: frontend/public/assets/generated/cny-scene-level3.dim_1920x1080.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/obj-angpao.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated angpao sprite as a static asset at the exact path: frontend/public/assets/generated/obj-angpao.dim_256x256.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/obj-coin.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated coin sprite as a static asset at the exact path: frontend/public/assets/generated/obj-coin.dim_256x256.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/obj-mochi.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated mochi sprite as a static asset at the exact path: frontend/public/assets/generated/obj-mochi.dim_256x256.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/ui-lantern.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated lantern UI icon as a static asset at the exact path: frontend/public/assets/generated/ui-lantern.dim_256x256.png."
+        },
+        {
+          "path": "frontend/src/game/levels.ts",
+          "operation": "modify",
+          "description": "Reference the exact generated asset paths for each level background and target sprite (under frontend/public/assets/generated/...) so gameplay uses the static assets (no backend image loading)."
+        },
+        {
+          "path": "frontend/src/components/layout/CnyLayout.tsx",
+          "operation": "modify",
+          "description": "Use the lantern icon asset at frontend/public/assets/generated/ui-lantern.dim_256x256.png for lightweight UI accents in the shared layout."
+        }
+      ]
+    }
+  ]
+}

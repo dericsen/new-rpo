@@ -1,0 +1,82 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-04T08:49:36.698Z",
+  "summary": "Diff adds a Motoko backend canister with per-principal progress APIs and a React frontend with II-based auth UI, screen routing, data-driven level config, hidden-object gameplay (5 targets per level), visual feedback and muteable sound, plus React Query hooks for progress/profile operations. However, stable persistence for backend data and developer documentation are not evidenced, and several extra features (user profiles, admin/ACL secret init, branding/footer links) appear beyond the BuildRequest.",
+  "missing_requirements": [
+    {
+      "id": "REQ-2",
+      "requirement": "Persist per-user progress across canister upgrades using stable storage (stable vars and upgrade hooks) in the Motoko single-actor canister.",
+      "reason": "backend/main.mo shows in-memory Maps (Map.empty) for userProgressMap/userProfiles, but the diff summary does not show any stable variables or preupgrade/postupgrade logic to persist them across upgrades. This risks losing progress on canister upgrade, conflicting with the stable storage constraint/AC.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "requirement": "Add local developer documentation (README or docs page) covering architecture, auth/data flow, local run steps, and how to add a new level.",
+      "reason": "No README/docs file is shown as added in the provided diff summary.",
+      "evidence": []
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Per-user profile feature (save/get user profile with a required name + ProfileSetupDialog gating).",
+      "reason": "BuildRequest did not request any user profile or name collection—only II auth + progress keyed by Principal.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useCurrentUserProfile.ts",
+        "frontend/src/components/auth/ProfileSetupDialog.tsx",
+        "frontend/src/App.tsx",
+        "frontend/src/pages/AuthPage.tsx"
+      ]
+    },
+    {
+      "description": "Authorization/admin-token initialization and access-control permission checks beyond simple “authenticated principal” gating.",
+      "reason": "Spec only requires II authentication and blocking unauthenticated access; it does not request an admin secret parameter, ACL initialization, or role/permission system.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useActor.ts"
+      ]
+    },
+    {
+      "description": "Footer attribution/linking to caffeine.ai and additional decorative layout elements not requested.",
+      "reason": "Not part of any REQ; purely extra UI/branding.",
+      "evidence": [
+        "frontend/src/components/layout/CnyLayout.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.72,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/README.md",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/auth/LoginLogoutButton.tsx",
+    "frontend/src/components/auth/ProfileSetupDialog.tsx",
+    "frontend/src/components/game/FoundFeedbackOverlay.tsx",
+    "frontend/src/components/layout/CnyLayout.tsx",
+    "frontend/src/game/HiddenObjectScene.tsx",
+    "frontend/src/game/levels.ts",
+    "frontend/src/game/types.ts",
+    "frontend/src/game/useSoundEffects.ts",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useCurrentUserProfile.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/AuthPage.tsx",
+    "frontend/src/pages/GameCompletePage.tsx",
+    "frontend/src/pages/GameplayPage.tsx",
+    "frontend/src/pages/LevelCompletePage.tsx",
+    "frontend/src/pages/LevelSelectPage.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}
